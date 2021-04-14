@@ -234,7 +234,22 @@ int deleteFirst(headNode* h) {//연결리스트의 첫번째 노드를 삭제한다.
  * 리스트의 링크를 역순으로 재 배치
  */
 int invertList(headNode* h) {
-
+	listNode* fore=h->first;//앞선 노드를 기억하는 포인터다
+	listNode* prev=NULL;////전 노드를 기억하는 포인터다
+	if(h->first==NULL||h->first->rlink==NULL)//연결리스트가 비었거나 노드가 한개라면 함수를 종료한다.
+		return 0;
+	else{
+		h->first->llink->llink=h->first;//마지막노드의 llink가 첫번째노드를 가르키게한다. 역순재배치가 된다면 마지막노드가 첫번째 노드가 되고 첫번째 노드가 마지막노드가 되기때문이다.
+		h->first=h->first->llink;//해드노드가 마지막 노드를 가르키게한다. 역순으로 바뀌면 마지막노드가 첫번째 노드가 되기때문이다.
+		while(fore->rlink!=NULL){//마지막노듣 제외한 나머지 노드의 링크를 역순으로 재배치한다.
+			prev=fore;//앞선노드로 가기 전노드를 저장한다.
+			fore=fore->rlink;//앞선 노드로 이동한다.
+			prev->rlink=prev->llink;//전 노드의 rlink가 전전 노드를 가르키게 한다.
+			prev->llink=fore;//전 노드의 llink가 앞선노드를 가르키게한다.
+		}
+		h->first->rlink=prev;//역순으로 바뀐 연결리스트의 첫번째노드가 각노드의 링크가 재배치된 노드들의 첫번째를 가르키게한다.
+		h->first->llink->rlink=NULL;//역순으로 바뀐 연결리스트의 마지막노드의 rlink를 NULL로 만든다.
+	}
 	return 0;
 }
 
