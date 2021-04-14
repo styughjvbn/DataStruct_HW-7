@@ -1,28 +1,12 @@
-/*
- *  doubly-linked-list.c
- *
- *  Doubly Linked List
- *
- *  Data Structures
- *  Department of Computer Science
- *  at Chungbuk National University
- *
- */
-
-
-
 #include<stdio.h>
 #include<stdlib.h>
 /* 필요한 헤더파일 추가 if necessary */
-
 
 typedef struct Node {
 	int key;
 	struct Node* llink;
 	struct Node* rlink;
 } listNode;
-
-
 
 typedef struct Head {
 	struct Node* first;
@@ -32,6 +16,10 @@ typedef struct Head {
 
 /* note: initialize는 이중포인터를 매개변수로 받음
          singly-linked-list의 initialize와 차이점을 이해 할것 */
+/* A : 이번 프로그램의 초기화 함수는 해더노드를 이중포인터로 받기때문에 함수내에서 해더노드 자체를 변경할 수 있다.
+ * 이중포인터로 받지 않고 단일포인터로 받는다면 리턴값을 할당받은 공간의 주소를 리턴해줘야하지만 이중포인터로 받았기때문에
+ * 주소값을 리턴해주지 않아도 된다.
+ */
 int initialize(headNode** h);
 
 /* note: freeList는 싱글포인터를 매개변수로 받음
@@ -56,6 +44,7 @@ int main()
 	int key;
 	headNode* headnode=NULL;
 
+	printf("[----- [서종원] [2018038031] -----]");
 	do{
 		printf("----------------------------------------------------------------\n");
 		printf("                     Doubly Linked  List                        \n");
@@ -68,6 +57,7 @@ int main()
 		printf("----------------------------------------------------------------\n");
 
 		printf("Command = ");
+		fflush(stdout);
 		scanf(" %c", &command);
 
 		switch(command) {
@@ -79,16 +69,19 @@ int main()
 			break;
 		case 'i': case 'I':
 			printf("Your Key = ");
+			fflush(stdout);
 			scanf("%d", &key);
 			insertNode(headnode, key);
 			break;
 		case 'd': case 'D':
 			printf("Your Key = ");
+			fflush(stdout);
 			scanf("%d", &key);
 			deleteNode(headnode, key);
 			break;
 		case 'n': case 'N':
 			printf("Your Key = ");
+			fflush(stdout);
 			scanf("%d", &key);
 			insertLast(headnode, key);
 			break;
@@ -121,11 +114,28 @@ int main()
 
 
 int initialize(headNode** h) {
+	if (*h != NULL)
+		freeList(*h);
+
+	*h = (headNode*)malloc(sizeof(headNode));
+	(*h)->first = NULL;
 
 	return 1;
 }
 
 int freeList(headNode* h){
+	listNode* p = h->first;
+
+	if (p==NULL){
+		free(h);
+		return 0;
+	}
+	while (p->rlink != NULL) {
+		p = p->rlink;
+		free(p->llink);
+	}
+	free(p);
+	free(h);
 	return 0;
 }
 
@@ -160,6 +170,7 @@ void printList(headNode* h) {
  */
 int insertLast(headNode* h, int key) {
 
+
 	return 0;
 }
 
@@ -170,7 +181,6 @@ int insertLast(headNode* h, int key) {
  */
 int deleteLast(headNode* h) {
 
-
 	return 0;
 }
 
@@ -180,6 +190,19 @@ int deleteLast(headNode* h) {
  * list 처음에 key에 대한 노드하나를 추가
  */
 int insertFirst(headNode* h, int key) {
+	listNode* node=(listNode*)malloc(sizeof(listNode));
+
+	if(h!=NULL){
+		node->llink=h->first->llink;
+		h->first->llink=node;
+		node->rlink=h->first;
+	}
+	else{
+		node->rlink=NULL;
+		node->llink=node;
+	}
+
+	h->first=node;
 	return 0;
 }
 
@@ -187,6 +210,18 @@ int insertFirst(headNode* h, int key) {
  * list의 첫번째 노드 삭제
  */
 int deleteFirst(headNode* h) {
+
+	if(h==NULL){
+		return 0;
+	}
+	else if(h->first->rlink==NULL){
+		free(h->first);
+	}
+	else{
+		h->first->rlink->llink=h->first->llink;
+		h->first=h->first->rlink;
+		free(h->first);
+	}
 
 	return 0;
 }
