@@ -263,7 +263,31 @@ int invertList(headNode* h) {
 
 /* 리스트를 검색하여, 입력받은 key보다 큰값이 나오는 노드 바로 앞에 삽입 */
 int insertNode(headNode* h, int key) {
+	listNode* node=(listNode*)malloc(sizeof(listNode));
+	listNode* search=h->first;
+	node->key=key;
+	node->rlink=NULL;
 
+	if(h==NULL){
+		node->llink=node;
+		h->first=node;
+	}
+	else{
+		while(search){
+			if(search->key>key){
+				node->rlink=search;
+				node->llink=search->llink;
+				search->llink->rlink=node;
+				search->llink=node;
+				if(h->first->rlink==NULL)
+					h->first=node;
+				return 0;
+			}
+			search=search->rlink;
+		}
+		h->first->llink->rlink=node;
+		node->llink=h->first->llink;
+	}
 	return 0;
 }
 
