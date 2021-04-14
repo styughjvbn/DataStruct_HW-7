@@ -169,7 +169,19 @@ void printList(headNode* h) {
  * list에 key에 대한 노드하나를 추가
  */
 int insertLast(headNode* h, int key) {
+	listNode* node=(listNode*)malloc(sizeof(listNode));
+	node->key=key;
 
+	if(h!=NULL){
+		node->rlink=NULL;
+		h->first->llink->rlink=node;
+		node->llink=h->first->llink;
+	}
+	else{
+		node->rlink=NULL;
+		node->llink=node;
+		h->first=node;
+	}
 
 	return 0;
 }
@@ -180,7 +192,17 @@ int insertLast(headNode* h, int key) {
  * list의 마지막 노드 삭제
  */
 int deleteLast(headNode* h) {
-
+	if(h==NULL){
+		return 0;
+	}
+	else if(h->first->rlink==NULL){
+		free(h->first);
+		h->first=NULL;
+	}
+	else{
+		h->first->llink->llink->rlink=NULL;
+		free(h->first->llink);
+	}
 	return 0;
 }
 
@@ -191,7 +213,7 @@ int deleteLast(headNode* h) {
  */
 int insertFirst(headNode* h, int key) {
 	listNode* node=(listNode*)malloc(sizeof(listNode));
-
+	node->key=key;
 	if(h!=NULL){
 		node->llink=h->first->llink;
 		h->first->llink=node;
@@ -216,6 +238,7 @@ int deleteFirst(headNode* h) {
 	}
 	else if(h->first->rlink==NULL){
 		free(h->first);
+		h->first=NULL;
 	}
 	else{
 		h->first->rlink->llink=h->first->llink;
