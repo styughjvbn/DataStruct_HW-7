@@ -162,27 +162,20 @@ void printList(headNode* h) {
 	printf("  items = %d\n", i);
 }
 
+int insertLast(headNode* h, int key) {//연결리스트의 마지막에 노드를 삽입한다.
+	listNode* node=(listNode*)malloc(sizeof(listNode));//입력받은 key를 가질 노드를 할당받는다.
+	node->key=key;//key값을 넣는다.
+	node->rlink=NULL;//연결리스트의 마지막에 삽입되기 때문에 rlink는 NULL이다.
 
-
-
-/**
- * list에 key에 대한 노드하나를 추가
- */
-int insertLast(headNode* h, int key) {
-	listNode* node=(listNode*)malloc(sizeof(listNode));
-	node->key=key;
-
-	if(h!=NULL){
-		node->rlink=NULL;
-		h->first->llink->rlink=node;
-		node->llink=h->first->llink;
+	if(h->first!=NULL){//연결리스트가 비어있지않다면 연결리스트의 마지막에 삽입한다.
+		node->llink=h->first->llink;//할당받은 노드의 llink가 마지막노드를 가르키게한다. 첫번째 노드의 llink가 마지막 노드를 가르키고 있기때문에 h->first->llink로 접근한다.
+		h->first->llink->rlink=node;//마지막노드의 rlink를 할당받은 노드를 가르키게한다.
+		h->first->llink=node;//연결리스트의 첫번째노드가 새로들어온 마지막노드를 가르키게한다.
 	}
-	else{
-		node->rlink=NULL;
-		node->llink=node;
-		h->first=node;
+	else{//비어있다면 해드노드와 연결한다.
+		node->llink=node;//연결리스트의 첫번째 노드이며 유일한 노드이기 때문에 llink가 자기자신(마지막노드)을 가르킨다.
+		h->first=node;//해드노드와 연결한다.
 	}
-
 	return 0;
 }
 
@@ -206,25 +199,20 @@ int deleteLast(headNode* h) {
 	return 0;
 }
 
+int insertFirst(headNode* h, int key) {//연결리스트의 처음에 노드를 삽입한다.
+	listNode* node=(listNode*)malloc(sizeof(listNode));//입력받은 key를 받을 노드를 할당받는다.
+	node->key=key;//입력받은 key값을 할당받은 노드에 넣는다.
 
-
-/**
- * list 처음에 key에 대한 노드하나를 추가
- */
-int insertFirst(headNode* h, int key) {
-	listNode* node=(listNode*)malloc(sizeof(listNode));
-	node->key=key;
-	if(h!=NULL){
-		node->llink=h->first->llink;
-		h->first->llink=node;
-		node->rlink=h->first;
+	if(h->first!=NULL){//연결리스트가 비어있지않다면 해드노드와 본래의 첫번째 노드사이에 할당받은 노드를 삽입한다.
+		node->llink=h->first->llink;//첫번째 노드의 llink는 마지막 노드를 가르킨다. 떄문에 본래의 첫번째 노드가 가르키는 마지막 노드를 할당받은 노드의 llink가 가르키게한다.
+		node->rlink=h->first;//할당받은 노드의 rlink를 연결리스트이 본래의 첫번째 노드를 가르키게한다.
+		h->first->llink=node;//본래의 첫번째 노드의 llink가 할당받은 노드를 가르키게한다.
 	}
-	else{
-		node->rlink=NULL;
-		node->llink=node;
+	else{//연결리스트가 비어있다면 할당받은 노드가 마지막노드가 되므로
+		node->rlink=NULL;//rlink를 NULL로 만들고
+		node->llink=node;//llink를 자기자신(마지막노드)를 가르키게만든다.
 	}
-
-	h->first=node;
+	h->first=node;//해드노드가 할당받은 노드를 가르키게한다.
 	return 0;
 }
 
