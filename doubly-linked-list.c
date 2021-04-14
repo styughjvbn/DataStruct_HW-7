@@ -230,9 +230,6 @@ int deleteFirst(headNode* h) {//연결리스트의 첫번째 노드를 삭제한다.
 
 	return 0;
 }
-
-
-
 /**
  * 리스트의 링크를 역순으로 재 배치
  */
@@ -241,44 +238,64 @@ int invertList(headNode* h) {
 	return 0;
 }
 
+int insertNode(headNode* h, int key) {/* 리스트를 검색하여, 입력받은 key보다 큰값이 나오는 노드 바로 앞에 삽입 */
+	listNode* node=(listNode*)malloc(sizeof(listNode));//삽입될 노드 할당
+	listNode* search=h->first;//각 노드들의 키값을 비교하기위한 포인터 search가 첫번째 노드를 가르키도록 한다.
+	node->key=key;//삽입할 노드에 입력받은 키값을 넣는다.
+	node->rlink=NULL;//일단 삽입할 노드의 rlink를 NULL로 만든다.
 
-
-/* 리스트를 검색하여, 입력받은 key보다 큰값이 나오는 노드 바로 앞에 삽입 */
-int insertNode(headNode* h, int key) {
-	listNode* node=(listNode*)malloc(sizeof(listNode));
-	listNode* search=h->first;
-	node->key=key;
-	node->rlink=NULL;
-
-	if(h==NULL){
-		node->llink=node;
-		h->first=node;
+	if(h->first==NULL){//연결리스트가 비었다면 처음에 노드를 삽입한다.
+		node->llink=node;//llink는 마지막 노드(자기자신)를 가르킨다
+		h->first=node;//해드노드와 연결한다.
 	}
-	else{
-		while(search){
-			if(search->key>key){
-				node->rlink=search;
-				node->llink=search->llink;
-				search->llink->rlink=node;
-				search->llink=node;
-				if(h->first->rlink==NULL)
+	else{//연결리스트가 비어있지않다면
+		while(search){//연결리스트의 마지막 노드까지 비교해본다.
+			if(search->key>key){//비교할 노드의 키값이 입력받은 키값보다 크다면 비교한 노드의 앞에 할당받은 노드를 삽입한다.
+				node->rlink=search;//삽입할 노드의 rlink를 비교한 노드를 가르키게한다.
+				node->llink=search->llink;//삽입할 노드의 llink를 비교한 노드의 llink가 가르키는 곳을 가르키게한다. 만약 비교한 노드가 첫번쨰노드라면 마지막노드를 가르킬테고 중간노드라면 이전노드를 가르킬것이다.
+				if(search==h->first){//만약 비교한 노드가 첫번째 노드라면 해드노드와 삽입할 노드를 연결하고
 					h->first=node;
-				return 0;
+				}
+				else//아니라면 비교한 노드의 전노드와 삽입할 노드를 연결한다.
+					search->llink->rlink=node;
+				search->llink=node;//비교한 노드의 llink가 삽입한 노드를 가르키게한다.
+				return 0;//노드삽입이 끝났으니 함수를 종료한다.
 			}
-			search=search->rlink;
-		}
-		h->first->llink->rlink=node;
-		node->llink=h->first->llink;
+			search=search->rlink;//비교한 노드가 삽입할 노드의 키값보다 작다면 다음 노드를 비교해본다.
+		}//연결리스트의 마지막까지 삽입할 노드의 키값보다 큰 노드를 발견하지 못했다면 마지막에 할당받은 노드를 삽입한다.
+		node->llink=h->first->llink;//노드의 llink가 원래의 마지막노드를 가르키게 한다.
+		h->first->llink->rlink=node;//마지막노드가 삽입할 노드를 가르키게한다.
+		h->first->llink=node;//연결리스트의 첫번째 노드가 새로들어온 마지막 노드를 가르키게한다.
 	}
 	return 0;
 }
 
+int deleteNode(headNode* h, int key) {//list에서 key에 대한 노드 삭제
+	listNode* search=h->first;//각 노드들의 키값을 비교하기위한 포인터 search가 첫번째 노드를 가르키도록 한다.
 
-/**
- * list에서 key에 대한 노드 삭제
- */
-int deleteNode(headNode* h, int key) {
-
+	if(h->first==NULL){//연결리스트가 비었다면 함수를 종료한다.
+		return 0;
+	}
+	else{
+		while(search->rlink!=NULL){//연결리스트의 마지막노드 전까지 비교한다.
+			if(search->key==key){//입력받은 key값을 가지는 노드를 찾았다면
+				if(search==h->first){//찾은 노드가 첫번쨰 노드라면
+					deleteFirst(h);//첫번쨰 노드를 삭제한다.
+					return 0;
+				}
+				else{//첫번쨰 노드가 아니라면
+					search->rlink->llink=search->llink;//찾은 노드의 다음 노드의 llink를 찾은 노드의 전노드를 가르키게 하고
+					search->llink->rlink=search->rlink;//찾은 노드의 전 노드의 rlink를 찾은 노드의 다음노드를 가르키게 한다.
+					free(search);//찾은 노드를 해제한다.
+					return 0;
+				}
+			}
+			search = search->rlink;//비교한 노드가 입력받은 key과 다르다면 다음 노드를 비교한다.
+		}
+	}
+	if(search->key==key){//마지막노드의 key값이 삭제하려는 key과 같다면 마지막노드를 삭제한다.
+		deleteLast(h);
+	}
 	return 1;
 }
 
