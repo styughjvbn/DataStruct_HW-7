@@ -179,22 +179,18 @@ int insertLast(headNode* h, int key) {//연결리스트의 마지막에 노드를 삽입한다.
 	return 0;
 }
 
-
-
-/**
- * list의 마지막 노드 삭제
- */
-int deleteLast(headNode* h) {
-	if(h==NULL){
+int deleteLast(headNode* h) {//연결리스트의 마지막 노드를 삭제한다.
+	if(h->first==NULL){//연결리스트가 비었다면 함수를 종료한다.
 		return 0;
 	}
-	else if(h->first->rlink==NULL){
-		free(h->first);
-		h->first=NULL;
+	else if(h->first->rlink==NULL){//연결리스트의 노드가 1개뿐이라면
+		free(h->first);//첫번째 노드를 해제한후
+		h->first=NULL;//연결리스트가 비었다는것을 표시한다.
 	}
-	else{
-		h->first->llink->llink->rlink=NULL;
-		free(h->first->llink);
+	else{//연결리스트의 노드가 2개이상이라면
+		h->first->llink=h->first->llink->llink;//첫번째 노드의 llink는 항상 마지막노드를 가르키므로 본래 마지막노드(h->first->llink)의 전노드(->llink)를 가르키게한다.
+		free(h->first->llink->rlink);//본래 마지막노드를 해제한다.
+		h->first->llink->rlink=NULL;//마지막노드(h->first->llink)의 rlink를 NULL로 만든다.
 	}
 	return 0;
 }
@@ -216,22 +212,20 @@ int insertFirst(headNode* h, int key) {//연결리스트의 처음에 노드를 삽입한다.
 	return 0;
 }
 
-/**
- * list의 첫번째 노드 삭제
- */
-int deleteFirst(headNode* h) {
-
-	if(h==NULL){
+int deleteFirst(headNode* h) {//연결리스트의 첫번째 노드를 삭제한다.
+	if(h->first==NULL){//만약 연결리스트가 비었다면 함수를 종료한다.
 		return 0;
 	}
-	else if(h->first->rlink==NULL){
-		free(h->first);
-		h->first=NULL;
+	else if(h->first->rlink==NULL){//연결리스트에 노드가 한개 뿐이라면
+		free(h->first);//첫번째 노드를 해제하고
+		h->first=NULL;//연결리스트가 비었다는 것을 표시한다.
 	}
-	else{
-		h->first->rlink->llink=h->first->llink;
-		h->first=h->first->rlink;
-		free(h->first);
+	else{//연결리스트에 2개이상의 노드가 있다면
+		h->first->llink->rlink=h->first;//마지막노드의 rlink에 삭제할 첫번째노드의 주소를 임시로 가르키게한다.
+		h->first->rlink->llink=h->first->llink;//연결리스트의 첫번째 노드는 항상 마지막 노드를 가르킨다. 첫번째 노드가 삭제된 후에 첫번째 노드가 될 두번째 노드의 llink가 마지막노드를 가르키게만든다.
+		h->first=h->first->rlink;//해드노드가 두번째 노드를 가르키게만든다.
+		free(h->first->llink->rlink);//마지막노드를 이용하여 삭제할 첫번째 노드에 접근하여 삭제한다.
+		h->first->llink->rlink=NULL;//마지막노드의 rlink를 다시 NULL로 만든다.
 	}
 
 	return 0;
