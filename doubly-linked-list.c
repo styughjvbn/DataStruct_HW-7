@@ -1,6 +1,5 @@
 #include<stdio.h>
 #include<stdlib.h>
-/* 필요한 헤더파일 추가 if necessary */
 
 typedef struct Node {
 	int key;
@@ -18,15 +17,14 @@ typedef struct Head {
          singly-linked-list의 initialize와 차이점을 이해 할것 */
 /* A : 이번 프로그램의 초기화 함수는 해더노드를 이중포인터로 받기때문에 함수내에서 해더노드 자체를 변경할 수 있다.
  * 이중포인터로 받지 않고 단일포인터로 받는다면 리턴값을 할당받은 공간의 주소를 리턴해줘야하지만 이중포인터로 받았기때문에
- * 주소값을 리턴해주지 않아도 된다.
- */
+ * 주소값을 리턴해주지 않아도 된다.*/
 int initialize(headNode** h);
 
 /* note: freeList는 싱글포인터를 매개변수로 받음
         - initialize와 왜 다른지 이해 할것
         - 이중포인터를 매개변수로 받아도 해제할 수 있을 것 */
+/* A : free()함수는 공간을 할당받은 주소값을 받아서 그곳에 할당받은 공간을 해제한다. 그렇기 때문에 주소값을 넘겨줘도 괜찮다. */
 int freeList(headNode* h);
-
 int insertNode(headNode* h, int key);
 int insertLast(headNode* h, int key);
 int insertFirst(headNode* h, int key);
@@ -34,17 +32,16 @@ int deleteNode(headNode* h, int key);
 int deleteLast(headNode* h);
 int deleteFirst(headNode* h);
 int invertList(headNode* h);
-
 void printList(headNode* h);
-
 
 int main()
 {
 	char command;
 	int key;
+	int check=0;//초기화가 진행됐는지 확인한다.
 	headNode* headnode=NULL;
 
-	printf("[----- [서종원] [2018038031] -----]");
+	printf("[----- [서종원] [2018038031] -----]\n");
 	do{
 		printf("----------------------------------------------------------------\n");
 		printf("                     Doubly Linked  List                        \n");
@@ -63,41 +60,72 @@ int main()
 		switch(command) {
 		case 'z': case 'Z':
 			initialize(&headnode);
+			check++;
 			break;
 		case 'p': case 'P':
-			printList(headnode);
+			if(check)
+				printList(headnode);
+			else
+				printf("초기화를 먼저 진행해주세요\n");
 			break;
 		case 'i': case 'I':
-			printf("Your Key = ");
-			fflush(stdout);
-			scanf("%d", &key);
-			insertNode(headnode, key);
+			if(check){
+				printf("Your Key = ");
+				fflush(stdout);
+				scanf("%d", &key);
+				insertNode(headnode, key);
+			}
+			else
+				printf("초기화를 먼저 진행해주세요\n");
 			break;
 		case 'd': case 'D':
-			printf("Your Key = ");
-			fflush(stdout);
-			scanf("%d", &key);
-			deleteNode(headnode, key);
+			if(check){
+				printf("Your Key = ");
+				fflush(stdout);
+				scanf("%d", &key);
+				deleteNode(headnode, key);
+			}
+			else
+				printf("초기화를 먼저 진행해주세요\n");
+
 			break;
 		case 'n': case 'N':
-			printf("Your Key = ");
-			fflush(stdout);
-			scanf("%d", &key);
-			insertLast(headnode, key);
+			if(check){
+				printf("Your Key = ");
+				fflush(stdout);
+				scanf("%d", &key);
+				insertLast(headnode, key);
+			}
+			else
+				printf("초기화를 먼저 진행해주세요\n");
 			break;
 		case 'e': case 'E':
-			deleteLast(headnode);
+			if(check)
+				deleteLast(headnode);
+			else
+				printf("초기화를 먼저 진행해주세요\n");
 			break;
 		case 'f': case 'F':
-			printf("Your Key = ");
-			scanf("%d", &key);
-			insertFirst(headnode, key);
+			if(check){
+				printf("Your Key = ");
+				fflush(stdout);
+				scanf("%d", &key);
+				insertFirst(headnode, key);
+			}
+			else
+				printf("초기화를 먼저 진행해주세요\n");
 			break;
 		case 't': case 'T':
-			deleteFirst(headnode);
+			if(check)
+				deleteFirst(headnode);
+			else
+				printf("초기화를 먼저 진행해주세요\n");
 			break;
 		case 'r': case 'R':
-			invertList(headnode);
+			if(check)
+				invertList(headnode);
+			else
+				printf("초기화를 먼저 진행해주세요\n");
 			break;
 		case 'q': case 'Q':
 			freeList(headnode);
@@ -106,39 +134,35 @@ int main()
 			printf("\n       >>>>>   Concentration!!   <<<<<     \n");
 			break;
 		}
-
 	}while(command != 'q' && command != 'Q');
-
 	return 1;
 }
 
-
 int initialize(headNode** h) {
-	if (*h != NULL)
+	if (*h != NULL)//헤드노드가 비어있지않다면 이미 있는 연결리스트를 해제한다.
 		freeList(*h);
 
-	*h = (headNode*)malloc(sizeof(headNode));
-	(*h)->first = NULL;
+	*h = (headNode*)malloc(sizeof(headNode));//역참조 연산자를 이용하여 직접 포인터에 접근한 후 해드노드의 공간을 할당받는다.
+	(*h)->first = NULL;//해드노드의 첫번째 노드를 NULL로 만든다.
 
 	return 1;
 }
 
 int freeList(headNode* h){
-	listNode* p = h->first;
+	listNode* p = h->first;//연결리스트의 첫번째 노드를 가르키게한다.
 
-	if (p==NULL){
+	if (p==NULL){//연결리스트가 비어있다면 해드노드를 해제하고 함수를 종료한다.
 		free(h);
 		return 0;
 	}
-	while (p->rlink != NULL) {
+	while (p->rlink != NULL) {//연결리스트가 비어있지않다면 첫번째부터 차근차근 해제한다.
 		p = p->rlink;
 		free(p->llink);
 	}
-	free(p);
-	free(h);
+	free(p);//마지막노드를 해제한다.
+	free(h);//해드노드를 해제한다.
 	return 0;
 }
-
 
 void printList(headNode* h) {
 	int i = 0;
@@ -181,6 +205,7 @@ int insertLast(headNode* h, int key) {//연결리스트의 마지막에 노드를 삽입한다.
 
 int deleteLast(headNode* h) {//연결리스트의 마지막 노드를 삭제한다.
 	if(h->first==NULL){//연결리스트가 비었다면 함수를 종료한다.
+		printf("리스트가 비었습니다.\n");
 		return 0;
 	}
 	else if(h->first->rlink==NULL){//연결리스트의 노드가 1개뿐이라면
@@ -214,6 +239,7 @@ int insertFirst(headNode* h, int key) {//연결리스트의 처음에 노드를 삽입한다.
 
 int deleteFirst(headNode* h) {//연결리스트의 첫번째 노드를 삭제한다.
 	if(h->first==NULL){//만약 연결리스트가 비었다면 함수를 종료한다.
+		printf("연결리스트가 비었습니다\n");
 		return 0;
 	}
 	else if(h->first->rlink==NULL){//연결리스트에 노드가 한개 뿐이라면
@@ -230,10 +256,8 @@ int deleteFirst(headNode* h) {//연결리스트의 첫번째 노드를 삭제한다.
 
 	return 0;
 }
-/**
- * 리스트의 링크를 역순으로 재 배치
- */
-int invertList(headNode* h) {
+
+int invertList(headNode* h) {//리스트의 링크를 역순으로 재 배치
 	listNode* fore=h->first;//앞선 노드를 기억하는 포인터다
 	listNode* prev=NULL;////전 노드를 기억하는 포인터다
 	if(h->first==NULL||h->first->rlink==NULL)//연결리스트가 비었거나 노드가 한개라면 함수를 종료한다.
@@ -289,6 +313,7 @@ int deleteNode(headNode* h, int key) {//list에서 key에 대한 노드 삭제
 	listNode* search=h->first;//각 노드들의 키값을 비교하기위한 포인터 search가 첫번째 노드를 가르키도록 한다.
 
 	if(h->first==NULL){//연결리스트가 비었다면 함수를 종료한다.
+		printf("연결리스트가 비었습니다\n");
 		return 0;
 	}
 	else{
@@ -311,7 +336,7 @@ int deleteNode(headNode* h, int key) {//list에서 key에 대한 노드 삭제
 	if(search->key==key){//마지막노드의 key값이 삭제하려는 key과 같다면 마지막노드를 삭제한다.
 		deleteLast(h);
 	}
+	else
+		printf("찾는 key을 가지는 노드가 없습니다.\n");
 	return 1;
 }
-
-
